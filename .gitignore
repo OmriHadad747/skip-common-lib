@@ -19,13 +19,9 @@ venv
 # playground
 playground.py
 
-# service account file
-skip-push-notification_fsa.json
-
 # API
 run.py
-skip_db_lib/__init__.py
-config.py
+skip_common_lib/__init__.py
 
 # TOML
 pyproject.toml
