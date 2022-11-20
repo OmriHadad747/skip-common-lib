@@ -19,9 +19,13 @@ REQUIRED_PACKAGES = [
     "Flask-PyMongo == 2.3.0",
     "pydantic == 1.10.2",
     "pymongo == 4.3.2",
+    "redis == 4.3.4",
     "black == 22.8.0",
     "pytest-mock == 3.8.2",
-    "firebase-admin == 6.0.1"
+    "firebase-admin == 6.0.1",
+    "Flask-APScheduler == 1.12.4",
+    "Flask-JWT-Extended == 4.4.4",
+    "PyJWT == 2.6.0"
 ]
 
 EXTRA_REQUIREMENTS = {}
