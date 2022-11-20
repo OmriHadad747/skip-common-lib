@@ -1,5 +1,5 @@
 from flask import Flask
-from skip_db_lib import config
+from skip_common_lib import config
 
 
 def create_app(app_config: config.BaseConfig) -> Flask:
@@ -7,7 +7,7 @@ def create_app(app_config: config.BaseConfig) -> Flask:
     app.config.from_object(app_config)
 
     with app.app_context():
-        from skip_db_lib import database
+        from skip_common_lib import database
 
         database.mongo.init_app(app)
 

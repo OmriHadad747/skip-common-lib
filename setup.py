@@ -21,6 +21,7 @@ REQUIRED_PACKAGES = [
     "pymongo == 4.3.2",
     "black == 22.8.0",
     "pytest-mock == 3.8.2",
+    "firebase-admin == 6.0.1"
 ]
 
 EXTRA_REQUIREMENTS = {}

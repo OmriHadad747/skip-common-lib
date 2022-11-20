@@ -1,6 +1,6 @@
 from bson.codec_options import TypeEncoder, TypeRegistry, CodecOptions
-from skip_db_lib.models.job import JobCategoryEnum, JobStatusEnum
-from skip_db_lib.models.freelancer import FreelancerStatusEnum
+from .models.job import JobCategoryEnum, JobStatusEnum
+from .models.freelancer import FreelancerStatusEnum
 
 
 class JobCategoryEncoder(TypeEncoder):
