@@ -22,6 +22,9 @@ class ProdConfig(BaseConfig):
     FREELANCER_COLLECTION = environ.get("FREELANCER_COLLECTION_PROD")
     JOB_COLLECTION = environ.get("JOB_COLLECTION_PROD")
 
+    # FIREBASE
+    FIREBASE_SERVICE_ACCOUNT = environ.get("FIREBASE_SERVICE_ACCOUNT_PROD")
+
 
 class DevConfig(BaseConfig):
     # General flask's configuration
@@ -46,6 +49,9 @@ class DevConfig(BaseConfig):
 
     # freelancer-finder service
     FREELANCER_FINDER_HOST = "localhost:4999"
+
+    # FIREBASE
+    FIREBASE_SERVICE_ACCOUNT = environ.get("FIREBASE_SERVICE_ACCOUNT_DEV")
 
 
 class LocalDevInDockerConfig(DevConfig):
