@@ -5,7 +5,7 @@ from pymongo.operations import UpdateOne
 from bson import ObjectId
 from ..models import freelancer as freelancer_model
 from ..models import job as job_model
-from ..custom_mongodb_encoders import codec_options
+from ..utils.custom_mongodb_encoders import codec_options
 from . import db, _freelancers
 
 

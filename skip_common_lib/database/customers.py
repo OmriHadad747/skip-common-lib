@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Any
 from pymongo.operations import UpdateOne
 from pymongo import collection
 from bson import ObjectId
-from ..custom_mongodb_encoders import codec_options
+from ..utils.custom_mongodb_encoders import codec_options
 from . import db, _customers
 
 
