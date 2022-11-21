@@ -8,7 +8,6 @@ def create_app(app_config: config.BaseConfig) -> Flask:
 
     with app.app_context():
         from skip_common_lib import database
-
         database.mongo.init_app(app)
 
         import playground

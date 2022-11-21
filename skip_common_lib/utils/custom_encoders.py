@@ -10,7 +10,6 @@ from ..models.job import JobCategoryEnum, JobStatusEnum
 from ..models.freelancer import FreelancerStatusEnum
 
 
-
 class JobCategoryEncoder(TypeEncoder):
 
     python_type = JobCategoryEnum  # the Python type acted upon by this type codec
@@ -52,7 +51,6 @@ job_status_encoder = JobStatusEncoder()
 freelancer_status_encoder = FreelancertatusEncoder()
 type_registry = TypeRegistry([job_category_encoder, job_status_encoder, freelancer_status_encoder])
 codec_options = CodecOptions(type_registry=type_registry)
-
 
 
 # TODO understand where I use this and how

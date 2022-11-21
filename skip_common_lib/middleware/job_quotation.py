@@ -1,4 +1,5 @@
 import pydantic as pyd
+
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
 from flask import current_app as app
@@ -66,7 +67,13 @@ def update_job_approved_or_declined(approved_func: Callable[[Any], Optional[Dict
             raise pyd.ValidationError("approved flag is not a boolean")
 
         try:
-            job = job_model.JobUpdate(**{"job_status": job_model.JobStatusEnum.APPROVED if approved else job_model.JobStatusEnum.CUSTOMER_CANCELD})
+            job = job_model.JobUpdate(
+                **{
+                    "job_status": job_model.JobStatusEnum.APPROVED
+                    if approved
+                    else job_model.JobStatusEnum.CUSTOMER_CANCELD
+                }
+            )
 
             res = db.update_job(
                 job_id, job, curr_job_status=job_model.JobStatusEnum.FREELANCER_FOUND

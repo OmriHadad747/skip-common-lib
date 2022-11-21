@@ -1,4 +1,15 @@
-def _exclude_failed_tokens(tokens: List[str], resps: List[messaging.SendResponse]) -> List[str]:
+from typing import List
+from pymongo import command_cursor
+from firebase_admin import messaging
+from flask import current_app as app
+from ..models import job as job_model
+from ..models import customer as customer_model
+from ..models import freelancer as freelancer_model
+
+
+class Notifier:
+    @classmethod
+    def _exclude_failed_tokens(tokens: List[str], resps: List[messaging.SendResponse]) -> List[str]:
         """Finds the failed registration tokens in 'resps' and remove
         them from database cause they are proably invalid.
 
@@ -17,8 +28,8 @@ def _exclude_failed_tokens(tokens: List[str], resps: List[messaging.SendResponse
 
         return [t for t in failed_tokens if t not in tokens]
 
-
-def _nofity_freelancers(
+    @classmethod
+    def _nofity_freelancers(
         cls, job: job_model.Job, freelancers: command_cursor.CommandCursor
     ) -> List[str]:
         """Found the registration token for each freelancer, and eventually
@@ -49,7 +60,6 @@ def _nofity_freelancers(
         )
         return tokens
 
-
     def _notify_customer(cls, job: job_model.Job, customer: customer_model.Customer) -> None:
         """Notify a customer that a freelancer has been found for his job
 
@@ -65,3 +75,30 @@ def _nofity_freelancers(
         # resp = messaging.send(msg, dry_run=True)
         resp = None
         app.logger.debug(f"customer notified with message {resp}")
+
+    def _notify(
+        cls,
+        job_id: str,
+        customer: customer_model.Customer,
+        freelancer: freelancer_model.Freelancer,
+        job_status: job_model.JobStatusEnum,
+    ) -> None:
+        # TODO write docstring
+        app.logger.info(
+            f"notifying customer {customer.email} and freelancer {freelancer.email} about job quotation approved for job {job_id}"
+        )
+
+        msg = messaging.MulticastMessage(
+            data={
+                "message": f"job {job_id} {'approved' if job_status == job_model.JobStatusEnum.APPROVED else 'declined'}"
+            },
+            tokens=[customer.registration_token, freelancer.registration_token],
+        )
+        resp: messaging.BatchResponse = messaging.send_multicast(msg, dry_run=True)
+        # TODO unfreeze here when working with real registration tokens
+        # if resp.failure_count > 0:
+        #     return cls._exclude_failed_tokens(
+        #         [customer.registration_token, freelancer.registration_token], resp.responses
+        #     )
+
+        app.logger.debug(f"customer and freelancer are both notified")

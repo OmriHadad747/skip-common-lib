@@ -1,4 +1,5 @@
 import pydantic as pyd
+
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
 from flask import current_app as app
