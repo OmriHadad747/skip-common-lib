@@ -2,7 +2,7 @@ from typing import Any, Dict
 from bson import ObjectId
 from pymongo import collection, results
 from ..models import job as job_model
-from ..utils.custom_mongodb_encoders import codec_options
+from ..utils.custom_encoders import codec_options
 from . import db, _jobs
 
 
