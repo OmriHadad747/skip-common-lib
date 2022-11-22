@@ -46,13 +46,6 @@ class FreelancertatusEncoder(TypeEncoder):
         return value.value
 
 
-job_category_encoder = JobCategoryEncoder()
-job_status_encoder = JobStatusEncoder()
-freelancer_status_encoder = FreelancertatusEncoder()
-type_registry = TypeRegistry([job_category_encoder, job_status_encoder, freelancer_status_encoder])
-codec_options = CodecOptions(type_registry=type_registry)
-
-
 # TODO understand where I use this and how
 class CustomeEncoder(json.JSONEncoder):
     # TODO write docstring for this class
@@ -63,9 +56,6 @@ class CustomeEncoder(json.JSONEncoder):
             return str(obj)
 
         return super(CustomeEncoder, self).default(obj)
-
-
-current_app.json_encoder = CustomeEncoder
 
 
 def custom_serializer(obj):
@@ -79,3 +69,12 @@ def custom_serializer(obj):
         return obj.value
     elif isinstance(obj, ObjectId):
         return str(obj)
+
+
+current_app.json_encoder = CustomeEncoder
+
+job_category_encoder = JobCategoryEncoder()
+job_status_encoder = JobStatusEncoder()
+freelancer_status_encoder = FreelancertatusEncoder()
+type_registry = TypeRegistry([job_category_encoder, job_status_encoder, freelancer_status_encoder])
+codec_options = CodecOptions(type_registry=type_registry)

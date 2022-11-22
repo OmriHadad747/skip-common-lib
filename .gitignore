@@ -23,5 +23,8 @@ playground.py
 run.py
 skip_common_lib/__init__.py 
 
+# service account file
+skip-push-notification_fsa.json
+
 # TOML
 pyproject.toml

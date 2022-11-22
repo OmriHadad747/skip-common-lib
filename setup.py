@@ -33,13 +33,13 @@ EXTRA_REQUIREMENTS = {}
 
 name = "skip-common-lib"
 version = "1.0.0"
-description = "A modular library that exposes a set of database operation"
+description = "A modular library that exposes a set of common operations"
 
 setup(
     name=name,
     version=version,
     description=description,
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     packages=[],  # ["res", *find_packages(include=["hemunah_core*"])],
     package_data={"": ["res/*.csv", "res/*.json", "res/*.yaml"]},
     include_package_data=True,
