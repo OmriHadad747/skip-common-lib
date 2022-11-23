@@ -11,6 +11,26 @@ from ..models import freelancer as freelancer_model
 
 
 class Notifier:
+    @staticmethod
+    def _exclude_failed_tokens(tokens: List[str], resps: List[messaging.SendResponse]) -> List[str]:
+        """Finds the failed registration tokens in 'resps' and remove
+        them from database cause they are proably invalid.
+
+        Args:
+            tokens (List[str]): Registration tokens that a notification pushed to.
+            resps (List[messaging.SendResponse]): List of responses from each notification for each freelancer notified.
+
+        Returns:
+            List[str]: List of all the registration tokens that actually notified
+        """
+        failed_tokens = [tokens[idx] for idx, resp in enumerate(resps) if not resp.success]
+        app.logger.debug(f"discarding invalid registration tokens {failed_tokens}")
+
+        # TODO implement the call to the db function that remove the registration token from freelancers
+        # implement here during testing with real registration tokens
+
+        return [t for t in failed_tokens if t not in tokens]
+
     @classmethod
     @pyd.validate_arguments
     def push_incoming_job(
