@@ -84,7 +84,7 @@ class Notifier:
 
     @classmethod
     @pyd.validate_arguments
-    def push_job_uotation(
+    def push_job_quotation(
         cls, quotation: job_model.JobQuotation, customer: customer_model.Customer
     ) -> None:
         # TODO write docstring
@@ -99,7 +99,7 @@ class Notifier:
 
     @classmethod
     @pyd.validate_arguments
-    def push_confirmation(
+    def push_quotation_confirmation(
         cls,
         job_id: str,
         freelancer: freelancer_model.Freelancer,
