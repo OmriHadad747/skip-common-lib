@@ -14,13 +14,13 @@ class JobCategoryEnum(Enum):
 
 
 class JobStatusEnum(Enum):
-    FREELANCER_FINDING = 0
-    FREELANCER_FOUND = 1
-    FREELANCER_CANCELED = 2
-    CUSTOMER_CANCELD = 3
-    APPROVED = 4
-    IN_PROGRESS = 5
-    DONE = 6
+    FREELANCER_FINDING = "freelancer finding"
+    FREELANCER_FOUND = "freelancer found"
+    FREELANCER_CANCELED = "freelancer canceled"
+    CUSTOMER_CANCELD = "customer canceld"
+    APPROVED = "customer approved"
+    IN_PROGRESS = "in progress"
+    DONE = "done"
 
 
 class JobQuotation(CustomBaseModel):
