@@ -79,8 +79,8 @@ class Notifier:
             data=job.job_to_str(freelancer_part=True), token=customer.registration_token
         )
         # resp = messaging.send(msg, dry_run=True)
-        resp = None
-        app.logger.debug(f"customer notified with message {resp}")
+
+        # app.logger.debug(f"customer notified with message {resp}")
 
     @classmethod
     @pyd.validate_arguments
@@ -101,24 +101,18 @@ class Notifier:
     @pyd.validate_arguments
     def push_quotation_confirmation(
         cls,
-        job_id: str,
+        job: job_model.Job,
         freelancer: freelancer_model.Freelancer,
-        job_status: job_model.JobStatusEnum,
     ) -> None:
         # TODO write docstring
         app.logger.info(
-            f"notifying freelancer {freelancer.email} about job quotation approved/canceld for job {job_id}"
+            f"notifying freelancer {freelancer.email} about job quotation approved/canceld for job {job.id}"
         )
 
-        msg = messaging.MulticastMessage(
-            data={"message": f"job {job_id} approved"},
+        msg = messaging.Message(
+            data=job.job_to_str(freelancer_part=True),
             tokens=freelancer.registration_token,
         )
-        resp: messaging.BatchResponse = messaging.send_multicast(msg, dry_run=True)
-        # TODO unfreeze here when working with real registration tokens
-        # if resp.failure_count > 0:
-        #     return cls._exclude_failed_tokens(
-        #         [customer.registration_token, freelancer.registration_token], resp.responses
-        #     )
+        # resp = messaging.send(msg, dry_run=True)
 
-        app.logger.debug(f"customer and freelancer are both notified")
+        # app.logger.debug(f"freelancer notified with message {resp}")
