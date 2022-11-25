@@ -2,7 +2,7 @@ import pydantic as pyd
 
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
-from flask import current_app as app
+
 from ..utils.errors import Errors as err
 from ..models import job as job_model
 from ..models import freelancer as freelancer_model
@@ -26,13 +26,13 @@ def save_incoming_job(find_func: Callable[[Any], Optional[Dict[str, Any]]]):
         try:
             incoming_job = job_model.Job(**incoming_job_fields)
 
-            app.logger.debug(f"saving to database the following job {incoming_job.dict()}")
+            #  app.logger.debug(f"saving to database the following job {incoming_job.dict()}")
 
             res = db.add_job(incoming_job)
             if not res.acknowledged:
                 return err.db_op_not_acknowledged(incoming_job.dict(), op="insert")
 
-            app.logger.debug(f"job {res.inserted_id} saved to database")
+            #  app.logger.debug(f"job {res.inserted_id} saved to database")
 
         except pyd.ValidationError as e:
             return err.validation_error(e, incoming_job_fields)
@@ -68,19 +68,19 @@ def update_incoming_job(take_func: Callable[[Any], Optional[Dict[str, Any]]]):
                 }
             )
 
-            app.logger.debug(f"updating job {job_id} in database with freelancer data")
+            #  app.logger.debug(f"updating job {job_id} in database with freelancer data")
 
             res = db.update_job(
                 job_id, job, curr_job_status=job_model.JobStatusEnum.FREELANCER_FINDING
             )
             if res.matched_count == 0 and res.modified_count == 0:
-                app.logger.debug(f"job {job_id} was already taken by another freelancer")
+                #  app.logger.debug(f"job {job_id} was already taken by another freelancer")
                 return take_func(_cls)
 
             if not res.acknowledged:
                 return err.db_op_not_acknowledged(job.dict(exclude_none=True), op="update")
 
-            app.logger.debug(f"job {job_id} updated in database")
+            #  app.logger.debug(f"job {job_id} updated in database")
 
         except pyd.ValidationError as e:
             return err.validation_error(e, freelancer_fields)

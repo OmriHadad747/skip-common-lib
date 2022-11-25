@@ -1,9 +1,9 @@
 import json
 
+from typing import Any
 from inspect import getsourcefile
 from os.path import abspath
 from pathlib import Path
-from typing import Any
 
 
 class Resource:

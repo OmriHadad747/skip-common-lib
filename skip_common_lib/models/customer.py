@@ -2,7 +2,8 @@ import pydantic as pyd
 
 from typing import List
 from datetime import datetime
-from flask_pymongo import ObjectId
+from bson import ObjectId
+
 from ..models import job as job_model
 from ..models import CustomBaseModel
 

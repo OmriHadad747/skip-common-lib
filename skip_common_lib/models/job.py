@@ -1,9 +1,10 @@
-from typing import Any, Dict
 import pydantic as pyd
 
+from typing import Any, Dict
 from datetime import datetime
 from enum import Enum
-from flask_pymongo import ObjectId
+from bson import ObjectId
+
 from ..models import CustomBaseModel
 
 

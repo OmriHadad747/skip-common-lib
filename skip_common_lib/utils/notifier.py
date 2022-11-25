@@ -3,7 +3,6 @@ import pydantic as pyd
 from typing import List
 from pymongo import command_cursor
 from firebase_admin import messaging
-from flask import current_app as app
 
 from ..models import job as job_model
 from ..models import customer as customer_model
@@ -24,7 +23,7 @@ class Notifier:
             List[str]: List of all the registration tokens that actually notified
         """
         failed_tokens = [tokens[idx] for idx, resp in enumerate(resps) if not resp.success]
-        app.logger.debug(f"discarding invalid registration tokens {failed_tokens}")
+        # app.logger.debug(f"discarding invalid registration tokens {failed_tokens}")
 
         # TODO implement the call to the db function that remove the registration token from freelancers
         # implement here during testing with real registration tokens
@@ -49,7 +48,7 @@ class Notifier:
         Returns:
             List[str]: List of all the registration tokens that actually notified
         """
-        app.logger.info("notifying freelancers about incoming job")
+        # app.logger.info("notifying freelancers about incoming job")
 
         tokens = [f.get("registration_token") for f in freelancers]
 
@@ -59,9 +58,9 @@ class Notifier:
         # if resp.failure_count > 0:
         #     return cls._exclude_failed_tokens(tokens, resp.responses)
 
-        app.logger.debug(
-            f"from {tokens} | {resp.success_count} notified | {resp.failure_count} not notified"
-        )
+        # app.logger.debug(
+        #     f"from {tokens} | {resp.success_count} notified | {resp.failure_count} not notified"
+        # )
         return tokens
 
     @classmethod
@@ -73,7 +72,7 @@ class Notifier:
             job (job_model.Job): Customer's job.
             customer (customer_model.Customer): Customer to notify.
         """
-        app.logger.info("notifying customer that a freelancer was found")
+        # app.logger.info("notifying customer that a freelancer was found")
 
         msg = messaging.Message(
             data=job.job_to_str(freelancer_part=True), token=customer.registration_token
@@ -88,7 +87,7 @@ class Notifier:
         cls, quotation: job_model.JobQuotation, customer: customer_model.Customer
     ) -> None:
         # TODO write docstring
-        app.logger.info("notifying customer about job quotation")
+        # app.logger.info("notifying customer about job quotation")
 
         msg = messaging.Message(
             data=quotation.quotation_to_str(), token=customer.registration_token
@@ -105,9 +104,9 @@ class Notifier:
         freelancer: freelancer_model.Freelancer,
     ) -> None:
         # TODO write docstring
-        app.logger.info(
-            f"notifying freelancer {freelancer.email} about job quotation approved/canceld for job {job.id}"
-        )
+        # app.logger.info(
+        #     f"notifying freelancer {freelancer.email} about job quotation approved/canceld for job {job.id}"
+        # )
 
         msg = messaging.Message(
             data=job.job_to_str(freelancer_part=True),

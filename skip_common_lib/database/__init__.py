@@ -1,19 +1,8 @@
-from flask_pymongo import PyMongo as FlaskPymongo
-from flask_pymongo import wrappers
-from werkzeug.local import LocalProxy
-from flask import current_app, g
+from pymongo import MongoClient
 
+from skip_common_lib.settings import settings as s
 
-mongo = FlaskPymongo()
-
-
-def get_dbs() -> wrappers.Collection:
-    if "database" not in g:
-        g.database = FlaskPymongo(current_app, uuidRepresentation="standard")
-    return g.database.db
-
-
-db: wrappers.Collection = LocalProxy(get_dbs)
-_freelancers = current_app.config["FREELANCER_COLLECTION"]
-_customers = current_app.config["CUSTOMER_COLLECTION"]
-_jobs = current_app.config["JOB_COLLECTION"]
+db = MongoClient(f"{s.setting.mongo_uri}")[s.setting.mongo_db_name]
+_freelancers = s.setting.freelancers_collection_name
+_customers = s.setting.customers_collection_name
+_jobs = s.setting.jobs_collection_name

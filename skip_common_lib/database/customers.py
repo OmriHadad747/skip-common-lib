@@ -2,6 +2,8 @@ from typing import Dict, List, Optional, Any
 from pymongo.operations import UpdateOne
 from pymongo import collection
 from bson import ObjectId
+
+from ..models import customer as customer_model
 from ..utils.custom_encoders import codec_options
 from . import db, _customers
 
@@ -28,9 +30,9 @@ class CustomerDatabase:
         return customer
 
     @classmethod
-    def add_customer(cls, customer: Dict[str, Any]) -> Optional[bool]:
+    def add_customer(cls, customer: customer_model.Customer) -> Optional[bool]:
         # TODO prevent mongodb to create an ID for a new customer
-        result = cls._get_coll().insert_one(customer)
+        result = cls._get_coll().insert_one(customer.dict())
         return result.acknowledged
 
     @staticmethod

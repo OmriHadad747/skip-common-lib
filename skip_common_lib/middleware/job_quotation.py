@@ -2,7 +2,7 @@ import pydantic as pyd
 
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
-from flask import current_app as app
+
 from ..utils.errors import Errors as err
 from ..models import job as job_model
 from ..database.jobs import JobDatabase as db
@@ -30,7 +30,7 @@ def update_job_quotation(quote_func: Callable[[Any], Optional[Dict[str, Any]]]):
                 }
             )
 
-            app.logger.debug(f"updating job {job_id} in db with quotation data")
+            #  app.logger.debug(f"updating job {job_id} in db with quotation data")
 
             res = db.update_job(
                 job_id, job, curr_job_status=job_model.JobStatusEnum.FREELANCER_FOUND
@@ -38,7 +38,7 @@ def update_job_quotation(quote_func: Callable[[Any], Optional[Dict[str, Any]]]):
             if not res.acknowledged:
                 return err.db_op_not_acknowledged(job.dict(exclude_none=True), op="update")
 
-            app.logger.debug(f"job {job_id} updated in db")
+            #  app.logger.debug(f"job {job_id} updated in db")
 
         except pyd.ValidationError as e:
             return err.validation_error(e, quotation_fields)

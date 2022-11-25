@@ -16,10 +16,9 @@ def _install_requirements():
 
 
 REQUIRED_PACKAGES = [
-    "Flask-PyMongo == 2.3.0",
+    "fastapi == 0.87.0",
+    "uvicorn[standard] == 0.20.0",
     "pymongo == 4.3.2",
-    "Flask-APScheduler == 1.12.4",
-    "Flask-JWT-Extended == 4.4.4",
     "PyJWT == 2.6.0",
     "pydantic == 1.10.2",
     "redis == 4.3.4",
