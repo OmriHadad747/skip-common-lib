@@ -1,4 +1,4 @@
-from pydantic import BaseSettings, BaseModel, validate_arguments
+from pydantic import BaseSettings, BaseModel, MongoDsn, RedisDsn
 
 
 class ProductionSettings(BaseSettings):
@@ -6,9 +6,10 @@ class ProductionSettings(BaseSettings):
     debug: bool = False
     testing: bool = False
 
-    mongo_uri: str
-    mongo_db_name = "skip-db"
-    redis_uri: str
+    mongo_uri: MongoDsn
+    db_name: str
+    
+    redis_uri: RedisDsn
 
     freelancer_finder_url: str
 
@@ -28,10 +29,6 @@ class DevelopmentSettings(ProductionSettings):
     debug: bool = True
     testing: bool = False
 
-    mongo_uri: str = "mongodb://localhost:27017/"
-    mongo_db_name = "skip-db-dev"
-    redis_uri: str = "redis://localhost:6379/0"
-
     customers_collection_name: str = "Customers"
     freelancers_collection_name: str = "Freelancers"
     jobs_collection_name: str = "Jobs"
@@ -43,10 +40,10 @@ class DevelopmentSettings(ProductionSettings):
 
 
 class DockerDevelopmentSettings(DevelopmentSettings):
-    mongo_uri: str = "mongodb://mongodb:27017/"
-    redis_uri: str = "redis://redis:6379/0"
-
     freelancer_finder_url: str = "http://skip-freelancer-finder:8001"
+
+    class Config:
+        env_prefix = "docker_"
 
 
 class TestSettings(ProductionSettings):
@@ -54,13 +51,13 @@ class TestSettings(ProductionSettings):
     debug: bool = False
     testing: bool = True
 
-    mongo_uri: str = "mongodb://localhost:27017/"
-    mongo_db_name = "skip-db-test"
-    redis_uri: str = "redis://localhost:6379/0"
-
+    mongo_uri: MongoDsn = "mongodb://localhost:27017/"
+    db_name: str = "skip-db-test"
     customers_collection_name: str = "Customers-test"
     freelancers_collection_name: str = "Freelancers-test"
     jobs_collection_name: str = "Jobs-test"
+
+    redis_uri: RedisDsn = "redis://localhost:6379/0"
 
 
 class AppSettings(BaseModel):

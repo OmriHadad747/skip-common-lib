@@ -10,7 +10,7 @@ from ..utils.custom_encoders import codec_options
 from . import db, _freelancers
 
 
-class FreelancerDatabase:
+class FreelancerDB:
 
     location_indexed = False
 
