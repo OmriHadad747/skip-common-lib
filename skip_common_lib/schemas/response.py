@@ -8,4 +8,5 @@ class MsgResponse(BaseModel):
 
 
 class EntityResponse(BaseModel):
-    entity: dict[str, Any]
+    args: dict[str, Any]
+    output: dict[str, Any]
