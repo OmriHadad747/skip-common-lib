@@ -11,7 +11,7 @@ class ProductionSettings(BaseSettings):
     redis_uri: str
 
     freelancer_finder_url: str
-    
+
     customers_collection_name: str
     freelancers_collection_name: str
     jobs_collection_name: str
@@ -38,7 +38,7 @@ class DevelopmentSettings(ProductionSettings):
 
     freelancer_finder_url: str = "http://localhost:8001"
 
-    class Config: 
+    class Config:
         env_prefix = "dev_"
 
 
@@ -64,9 +64,18 @@ class TestSettings(ProductionSettings):
 
 
 class AppSettings(BaseModel):
-    setting: ProductionSettings | DevelopmentSettings | DockerDevelopmentSettings | TestSettings = None
+    setting: ProductionSettings | DevelopmentSettings | DockerDevelopmentSettings | TestSettings = (
+        None
+    )
 
-    def init(self, env_settings: ProductionSettings | DevelopmentSettings | DockerDevelopmentSettings | TestSettings):
+    def init(
+        self,
+        env_settings: ProductionSettings
+        | DevelopmentSettings
+        | DockerDevelopmentSettings
+        | TestSettings,
+    ):
         self.setting = env_settings()
 
-settings = AppSettings()
+
+app_settings = AppSettings()

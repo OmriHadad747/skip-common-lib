@@ -2,8 +2,8 @@ from datetime import datetime, date
 from bson import ObjectId
 from bson.codec_options import TypeEncoder, TypeRegistry, CodecOptions
 
-from ..models.job import JobCategoryEnum, JobStatusEnum
-from ..models.freelancer import FreelancerStatusEnum
+from ..schemas.job import JobCategoryEnum, JobStatusEnum
+from ..schemas.freelancer import FreelancerStatusEnum
 
 
 class JobCategoryEncoder(TypeEncoder):
@@ -53,6 +53,7 @@ def custom_serializer(obj):
         return obj.value
     elif isinstance(obj, ObjectId):
         return str(obj)
+
 
 job_category_encoder = JobCategoryEncoder()
 job_status_encoder = JobStatusEncoder()

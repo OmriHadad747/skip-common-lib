@@ -1,11 +1,10 @@
 import pydantic as pyd
 
-from typing import List
 from datetime import datetime
 from bson import ObjectId
 
-from ..models import job as job_model
-from ..models import CustomBaseModel
+from ..schemas import job as job_schema
+from ..schemas import CustomBaseModel
 
 
 class Customer(CustomBaseModel):
@@ -17,7 +16,7 @@ class Customer(CustomBaseModel):
     address: str
     county: str
     rating: float = 1.0
-    job_history: List[job_model.Job] = []
+    job_history: list[job_schema.Job] = []
     location: pyd.conlist(item_type=float, min_items=2, max_items=2)
     registration_token: str
 

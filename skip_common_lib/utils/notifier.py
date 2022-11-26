@@ -1,26 +1,25 @@
 import pydantic as pyd
 
-from typing import List
 from pymongo import command_cursor
 from firebase_admin import messaging
 
-from ..models import job as job_model
-from ..models import customer as customer_model
-from ..models import freelancer as freelancer_model
+from ..schemas import job as job_schema
+from ..schemas import customer as customer_schema
+from ..schemas import freelancer as freelancer_schema
 
 
 class Notifier:
     @staticmethod
-    def _exclude_failed_tokens(tokens: List[str], resps: List[messaging.SendResponse]) -> List[str]:
+    def _exclude_failed_tokens(tokens: list[str], resps: list[messaging.SendResponse]) -> list[str]:
         """Finds the failed registration tokens in 'resps' and remove
         them from database cause they are proably invalid.
 
         Args:
-            tokens (List[str]): Registration tokens that a notification pushed to.
-            resps (List[messaging.SendResponse]): List of responses from each notification for each freelancer notified.
+            tokens (list[str]): Registration tokens that a notification pushed to.
+            resps (list[messaging.SendResponse]): List of responses from each notification for each freelancer notified.
 
         Returns:
-            List[str]: List of all the registration tokens that actually notified
+            list[str]: list of all the registration tokens that actually notified
         """
         failed_tokens = [tokens[idx] for idx, resp in enumerate(resps) if not resp.success]
         # app.logger.debug(f"discarding invalid registration tokens {failed_tokens}")
@@ -33,8 +32,8 @@ class Notifier:
     @classmethod
     @pyd.validate_arguments
     def push_incoming_job(
-        cls, job: job_model.Job, freelancers: command_cursor.CommandCursor
-    ) -> List[str]:
+        cls, job: job_schema.Job, freelancers: command_cursor.CommandCursor
+    ) -> list[str]:
         """Found the registration token for each freelancer, and eventually
         trying to push notification for all of them.
 
@@ -46,7 +45,7 @@ class Notifier:
             freelancers (command_cursor.CommandCursor): Cursor of available freelancers
 
         Returns:
-            List[str]: List of all the registration tokens that actually notified
+            list[str]: list of all the registration tokens that actually notified
         """
         # app.logger.info("notifying freelancers about incoming job")
 
@@ -65,7 +64,7 @@ class Notifier:
 
     @classmethod
     @pyd.validate_arguments
-    def push_freelancer_found(cls, job: job_model.Job, customer: customer_model.Customer) -> None:
+    def push_freelancer_found(cls, job: job_schema.Job, customer: customer_schema.Customer) -> None:
         """Notify a customer that a freelancer has been found for his job
 
         Args:
@@ -84,7 +83,7 @@ class Notifier:
     @classmethod
     @pyd.validate_arguments
     def push_job_quotation(
-        cls, quotation: job_model.JobQuotation, customer: customer_model.Customer
+        cls, quotation: job_schema.JobQuotation, customer: customer_schema.Customer
     ) -> None:
         # TODO write docstring
         # app.logger.info("notifying customer about job quotation")
@@ -100,8 +99,8 @@ class Notifier:
     @pyd.validate_arguments
     def push_quotation_confirmation(
         cls,
-        job: job_model.Job,
-        freelancer: freelancer_model.Freelancer,
+        job: job_schema.Job,
+        freelancer: freelancer_schema.Freelancer,
     ) -> None:
         # TODO write docstring
         # app.logger.info(

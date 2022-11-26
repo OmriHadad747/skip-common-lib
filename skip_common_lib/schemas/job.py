@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 from bson import ObjectId
 
-from ..models import CustomBaseModel
+from ..schemas import CustomBaseModel
 
 
 class JobCategoryEnum(Enum):

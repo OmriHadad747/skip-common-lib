@@ -1,8 +1,11 @@
-from pymongo import MongoClient
+from motor import motor_asyncio
 
-from skip_common_lib.settings import settings as s
+from skip_common_lib.settings import app_settings as s
 
-db = MongoClient(f"{s.setting.mongo_uri}")[s.setting.mongo_db_name]
+
+db: motor_asyncio.AsyncIOMotorDatabase = motor_asyncio.AsyncIOMotorClient(f"{s.setting.mongo_uri}")[
+    s.setting.mongo_db_name
+]
 _freelancers = s.setting.freelancers_collection_name
 _customers = s.setting.customers_collection_name
 _jobs = s.setting.jobs_collection_name

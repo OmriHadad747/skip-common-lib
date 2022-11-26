@@ -1,9 +1,10 @@
 fastapi==0.87.0
 uvicorn[standard]==0.20.0
 pymongo==4.3.2
-PyJWT==2.6.0
+motor==3.1.1
 pydantic==1.10.2
 redis==4.3.4
+asyncio-redis==0.16.0
 black==22.8.0
 pytest-mock==3.8.2
 firebase-admin==6.0.1

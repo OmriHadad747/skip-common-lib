@@ -1,42 +1,32 @@
-from typing import Dict, List, Optional, Any
+from typing import Any
+from pymongo import collection, results, ASCENDING
 from pymongo.operations import UpdateOne
-from pymongo import collection
 from bson import ObjectId
 
-from ..models import customer as customer_model
+from ..schemas import customer as customer_schema
 from ..utils.custom_encoders import codec_options
 from . import db, _customers
 
 
-class CustomerDatabase:
+class CustomerDB:
+    location_indexed = False
+
     @classmethod
     def _get_coll(cls) -> collection.Collection:
         """
-        Returns the relevant collection with pointing to a codec opetion
+        Returns the relevant collection with pointing to a codec opetion.
 
         Returns:
-            collection.Collection: Jobs collection
+            collection.Collection: Customer collection
         """
+        if not cls.location_indexed:
+            db[_customers].create_index([("email", ASCENDING)])
+            cls.location_indexed = True
+
         return db[_customers].with_options(codec_options=codec_options)
 
-    @classmethod
-    def get_customer_by_id(cls, id: str) -> Optional[Any]:
-        customer = cls._get_coll().find_one({"_id": ObjectId(id)})
-        return customer
-
-    @classmethod
-    def get_customer_by_email(cls, email: str) -> Optional[Any]:
-        customer = cls._get_coll().find_one({"email": email})
-        return customer
-
-    @classmethod
-    def add_customer(cls, customer: customer_model.Customer) -> Optional[bool]:
-        # TODO prevent mongodb to create an ID for a new customer
-        result = cls._get_coll().insert_one(customer.dict())
-        return result.acknowledged
-
     @staticmethod
-    def _build_array_update_write(field: str, op: str, data: List[Any]) -> Optional[Dict[str, Any]]:
+    def _build_array_update_write(field: str, op: str, data: list[Any]) -> dict[str, Any] | None:
         """
         - building 'update' argument for PyMongo's UpdateOne method
         for document fields that are an array type
@@ -50,7 +40,7 @@ class CustomerDatabase:
             - ValueError: in case of unknown/unsupported 'op' (operation)
 
         Returns:
-            - Optional[Dict[str, Any]]: dictionary that can be rendered by MongoDB driver
+            - dict[str, Any] | None: dictionary that can be rendered by MongoDB driver
         """
         if op == "add":
             return {"$addToSet": {field: {"$each": data}}}
@@ -61,8 +51,8 @@ class CustomerDatabase:
 
     @staticmethod
     def _adapt_for_bulkwrite(
-        fields_to_update: Dict[str, Any], _filter: Dict[str, Any]
-    ) -> Optional[List[Dict[str, Any]]]:
+        fields_to_update: dict[str, Any], _filter: dict[str, Any]
+    ) -> list[dict[str, Any]] | None:
         """
         - iterate through all the provided document fields and build a list of updates
         to perform using the 'bulk_write' method
@@ -80,7 +70,7 @@ class CustomerDatabase:
                 - in case an array field contains more then 1 operation ['add', 'rem'] to perform
 
         Returns:
-            - Optional[List[Dict[str, Any]]]: list of updateOne operation to perform as part of the 'bulk_write' method
+            - list[dict[str, Any]] | None: list of updateOne operation to perform as part of the 'bulk_write' method
         """
         writes = []
 
@@ -97,7 +87,7 @@ class CustomerDatabase:
                 writes.append(
                     UpdateOne(
                         _filter,
-                        CustomerDatabase._build_array_update_write(field, op, data),
+                        CustomerDB._build_array_update_write(field, op, data),
                     )
                 )
             else:
@@ -112,12 +102,31 @@ class CustomerDatabase:
         return writes
 
     @classmethod
-    def update_customer(cls, email: str, fields: Dict[str, Any]) -> Optional[bool]:
-        writes = cls._adapt_for_bulkwrite(fields, _filter={"email": email})
-        result = cls._get_coll().bulk_write(writes)
-        return result.acknowledged
+    async def get_customer_by_id(cls, id: str) -> Any | None:
+        customer = await cls._get_coll().find_one({"_id": ObjectId(id)})
+        return customer
 
     @classmethod
-    def delete_customer(cls, customer_email: str) -> Optional[bool]:
-        result = cls._get_coll().delete_one({"email": customer_email})
-        return result.acknowledged
+    async def get_customer_by_email(cls, email: str) -> Any | None:
+        customer = await cls._get_coll().find_one({"email": email})
+        return customer
+
+    @classmethod
+    async def add_customer(cls, customer: customer_schema.Customer) -> results.InsertOneResult:
+        result = await cls._get_coll().insert_one(customer.dict())
+        return result
+
+    @classmethod
+    async def update_customer(
+        cls, email: str, customer: customer_schema.Customer
+    ) -> results.UpdateResult:
+        result = await cls._get_coll().update_one(
+            {"email": email},
+            {"$set": customer.dict(exclude_none=True)},
+        )
+        return result
+
+    @classmethod
+    async def delete_customer(cls, email: str) -> results.DeleteResult:
+        result = await cls._get_coll().delete_one({"email": email})
+        return result
