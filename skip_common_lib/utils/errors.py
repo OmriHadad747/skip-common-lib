@@ -40,7 +40,10 @@ class Errors:
         )
 
     @classmethod
-    def general_exception(cls, exc: Exception):
+    def general_exception(cls, exc: Exception, logger: Logger = None):
+        if logger:
+            logger.error(f"{exc} caused to internal server error")
+            
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
 
     @classmethod
