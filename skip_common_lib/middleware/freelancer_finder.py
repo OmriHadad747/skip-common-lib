@@ -24,13 +24,13 @@ def save_incoming_job(find_func: Callable[[Any], dict[str, Any] | None]):
         incoming_job: job_schema.Job = args[1]
 
         try:
-            #  app.logger.debug(f"saving to database the following job {incoming_job.dict()}")
+            _cls.logger.debug(f"saving to database the following job {incoming_job.dict()}")
 
             res = await db.add_job(incoming_job)
             if not res.acknowledged:
                 return err.db_op_not_acknowledged(incoming_job.dict(), op="insert")
 
-            #  app.logger.debug(f"job {res.inserted_id} saved to database")
+            _cls.logger.debug(f"job {res.inserted_id} saved to database")
 
         except pyd.ValidationError as e:
             return err.validation_error(e)
@@ -65,19 +65,19 @@ def update_incoming_job(take_func: Callable[[Any], dict[str, Any] | None]):
                 }
             )
 
-            #  app.logger.debug(f"updating job {job_id} in database with freelancer data")
+            _cls.logger.debug(f"updating job {job_id} in database with freelancer data")
 
             res = await db.update_job(
                 job_id, job, curr_job_status=job_schema.JobStatusEnum.FREELANCER_FINDING
             )
             if res.matched_count == 0 and res.modified_count == 0:
-                #  app.logger.debug(f"job {job_id} was already taken by another freelancer")
+                _cls.logger.debug(f"job {job_id} was already taken by another freelancer")
                 return take_func(_cls)
 
             if not res.acknowledged:
                 return err.db_op_not_acknowledged(job.dict(exclude_none=True), op="update")
 
-            #  app.logger.debug(f"job {job_id} updated in database")
+            _cls.logger.debug(f"job {job_id} updated in database")
 
         except pyd.ValidationError as e:
             return err.validation_error(e)
