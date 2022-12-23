@@ -17,6 +17,7 @@ def _install_requirements():
 
 REQUIRED_PACKAGES = [
     "fastapi == 0.87.0",
+    "fastapi-utils == 0.2.1",
     "uvicorn[standard] == 0.20.0",
     "pymongo == 4.3.2",
     "motor == 3.1.1",
