@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 
@@ -31,5 +30,3 @@ class LogConfig(BaseModel):
     loggers = {
         LOGGER_NAME: {"handlers": ["default"], "level": LOG_LEVEL},
     }
-
-

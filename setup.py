@@ -16,18 +16,11 @@ def _install_requirements():
 
 
 REQUIRED_PACKAGES = [
-    "fastapi == 0.87.0",
-    "fastapi-utils == 0.2.1",
-    "uvicorn[standard] == 0.20.0",
-    "pymongo == 4.3.2",
-    "motor == 3.1.1",
     "pydantic == 1.10.2",
-    "redis == 4.3.4",
-    "asyncio-redis == 0.16.0",
     "black == 22.8.0",
     "pytest-mock == 3.8.2",
-    "firebase-admin == 6.0.1",
-    "python-dotenv == 0.21.0",
+    "httpx == 0.9.5",
+    "tenacity == 8.0.1",
 ]
 
 EXTRA_REQUIREMENTS = {}
