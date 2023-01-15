@@ -1,4 +1,3 @@
-import enum
 import httpx
 import tenacity
 import logging

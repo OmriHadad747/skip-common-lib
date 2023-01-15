@@ -19,7 +19,7 @@ REQUIRED_PACKAGES = [
     "pydantic == 1.10.2",
     "black == 22.8.0",
     "pytest-mock == 3.8.2",
-    "httpx == 0.9.5",
+    "httpx == 0.23.3",
     "tenacity == 8.0.1",
 ]
 
