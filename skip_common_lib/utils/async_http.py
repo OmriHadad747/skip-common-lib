@@ -1,59 +1,18 @@
 import httpx
-import tenacity
-import logging
 
+from logging import Logger
 from typing import Any
 
 from ..consts import HttpMethod
 
 
-class RetryIfNotStatus(tenacity.retry_if_exception):
-    """Retries only if a response status code is NOT of the following."""
-
-    def __init__(self, status_codes: list[int] | None = None) -> None:
-        if status_codes is None:
-            # TODO re-think what statuses will trigger a retry
-            status_codes = [
-                401,
-                402,
-                404,
-                405,
-                406,
-            ]
-
-        super().__init__(
-            lambda e: e.response.status_code not in status_codes
-            if isinstance(e, httpx.HTTPStatusError)
-            else False
-        )
-
-
 class AsyncHttp:
-
-    logger = logging.getLogger()
-
     @classmethod
-    def _log_retry_attempt(cls, retry_state: tenacity.RetryCallState) -> None:
-        """Logs which URL is being retried.
+    async def http_call(cls, logger: Logger | None = None, **kwargs) -> httpx.Response:
+        """Single entry point for making an http request.
 
         Args:
-            retry_state (tenacity.RetryCallState)
-        """
-        if url := retry_state.kwargs.get("url"):
-            cls.logger.info(f"retrying request to {url}")
-        elif retry_state.args:
-            cls.logger.info(f"retrying request to {retry_state.args[0]}")
-
-    @classmethod
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=30, min=2, max=4),
-        stop=tenacity.stop_after_attempt(4),
-        retry=RetryIfNotStatus(),
-        before=_log_retry_attempt,
-        reraise=True,
-    )
-    async def http_call(cls, **kwargs) -> httpx.Response:
-        """Single entry point for making an http request.
+            logger (Logger | None, optional): _description_. Defaults to None.
 
         Raises:
             ValueError: In case the provided http method is undefined.
@@ -63,14 +22,21 @@ class AsyncHttp:
         """
         http_method: HttpMethod = kwargs.pop("method", HttpMethod.GET)
         if not HttpMethod.valid_method(http_method.value):
-            cls.logger.error(f"invalid httpd method provided: {http_method}")
+            if logger:
+                logger.error(f"invalid httpd method provided: {http_method}")
             raise ValueError(f"invalid method: {http_method}")
+
+        if logger:
+            logger.info(
+                f"sending {http_method.value.upper()} request to {kwargs.get('url')} || payload : {kwargs.get('json') or None}"
+            )
 
         resp: httpx.Response = await eval(f"cls._{http_method.value}(**{kwargs})")
 
-        cls.logger.info(
-            f"response info from endpoint: {resp.request.url} || status code: {resp.status_code} || response: {resp.json() or 'None'}"
-        )
+        if logger:
+            logger.info(
+                f"response info from endpoint: {resp.request.url} || status code: {resp.status_code} || response: {resp.json() or 'None'}"
+            )
 
         resp.raise_for_status()
         return resp
@@ -83,8 +49,6 @@ class AsyncHttp:
             kwargs.pop("auth", None),
             kwargs.pop("params", {}),
         )
-
-        cls.logger.info(f"Sending GET request to: {url}")
 
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.get(url=url, headers=headers, auth=auth, params=params)
@@ -101,8 +65,6 @@ class AsyncHttp:
             kwargs.pop("json", {}),
         )
 
-        cls.logger.info(f"Sending POST request to: {url}\nPayload: {json or 'None'}")
-
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.post(url=url, headers=headers, auth=auth, params=params, json=json)
 
@@ -117,8 +79,6 @@ class AsyncHttp:
             kwargs.pop("params", {}),
             kwargs.pop("json", {}),
         )
-
-        cls.logger.info(f"Sending PUT request to {url}\nPayload: {json or 'None'}")
 
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.put(
@@ -141,8 +101,6 @@ class AsyncHttp:
             kwargs.pop("json", {}),
         )
 
-        cls.logger.info(f"Sending PATCH request to {url}\nPayload: {json or 'None'}")
-
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.patch(
                 url=url,
@@ -163,8 +121,6 @@ class AsyncHttp:
             kwargs.pop("params", {}),
             kwargs.pop("json", {}),
         )
-
-        cls.logger.info(f"Sending DELETE request to {url}")
 
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.delete(
